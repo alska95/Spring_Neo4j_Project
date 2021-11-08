@@ -1,4 +1,4 @@
-package com.example.neo4j.service;
+package com.example.neo4j.repository;
 
 import com.example.neo4j.entity.Movie;
 import org.springframework.data.neo4j.repository.query.Query;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-interface MovieRepository extends Repository<Movie, String> {
+public interface MovieRepository extends Repository<Movie, String> {
 
     @Query("MATCH (movie:Movie) WHERE movie.title CONTAINS $title RETURN movie")
     List<Movie> findSearchResults(@Param("title") String title);
