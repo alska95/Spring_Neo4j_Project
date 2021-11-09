@@ -10,7 +10,7 @@ import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 public class DatabaseConfig {
 
     @Bean
-    DatabaseSelectionProvider databaseSelectionProvider(@Value("${spring.data.neo4j.database}") String database) {
+    DatabaseSelectionProvider databaseSelectionProvider(@Value("${spring.data.neo4j.database}") String database) { //yml파일 설정을 가져와서 db정보를 넣어준다.
         return () -> {
             String neo4jVersion = System.getenv("NEO4J_VERSION");
             if (neo4jVersion == null || neo4jVersion.startsWith("4")) {

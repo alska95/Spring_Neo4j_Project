@@ -26,6 +26,8 @@ class MovieServiceTest {
 
     private static final String PASSWORD = "movies";
 
+    @Autowired private MovieService movieService;
+
     @DynamicPropertySource
     static void neo4jProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.neo4j.uri", () -> "neo4j://localhost:7687"); //도커 사용하지 않고 테스트 진행
@@ -49,17 +51,45 @@ class MovieServiceTest {
         }
     }
 
+    void createByDriver(@Autowired Driver driver) {
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (n) DETACH DELETE n"); //노드 전부 제거
+                tx.run(""
+                        + "CREATE (TheMatrix:Movie {title:'The Matrix', released:1999, tagline:'Welcome to the Real World'})");
+                return null;
+            });
+        }
+    }
+
+    void deleteByDriver(@Autowired Driver driver) {
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (n) DETACH DELETE n"); //대상을 제거한다.
+                return null;
+            });
+        }
+    }
+
     @Test
-    public void searches_movies_by_title(@Autowired MovieService service) {
+    public void searches_movies_by_title() {
         String title = "Matrix Re";
-        assertThat(service.searchMoviesByTitle(title))
+        assertThat(movieService.searchMoviesByTitle(title))
                 .hasSize(2)
                 .extracting(mr -> mr.getMovie().getTitle()).containsExactlyInAnyOrder("The Matrix Reloaded", "The Matrix Revolutions");
     }
 
     @Test
-    public void fetches_movie_details(@Autowired MovieService service) {
-        MovieDetailsDto details = service.fetchDetailsByTitle("The Matrix");
+    public void searches_movies_by_title2() {
+        String title = "Matrix Re";
+        assertThat(movieService.searchMoviesByTitle2(title))
+                .hasSize(2)
+                .extracting(mr -> mr.getMovie().getTitle()).containsExactlyInAnyOrder("The Matrix Reloaded", "The Matrix Revolutions");
+    }
+
+    @Test
+    public void fetches_movie_details() {
+        MovieDetailsDto details = movieService.fetchDetailsByTitle("The Matrix");
 
         assertThat(details.getTitle()).isEqualTo("The Matrix");
         assertThat(details.getCast()).containsExactly(new CastMemberDto("Keanu Reeves", "acted", "Neo"));

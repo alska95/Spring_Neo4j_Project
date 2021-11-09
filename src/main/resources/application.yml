@@ -3,10 +3,17 @@ org:
     driver:
       uri: neo4j://localhost:7687
       authentication:
-        username: neo4j
-        password: movies
+        username: neo4j #디폴트 유저 네임이다. 따로 설정 안했으면 똑같이 적어줄것
+        password: movies #neo4j 데스크톱 콘솔에서 설정할 수 있다.
 
 spring:
   data:
     neo4j:
-      database: movies
+      database: movies # neo4j 데스크톱에서 movies 데이터 베이스를 하나 만들어주자.
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          neo4j: DEBUG # 내부적으로 돌아가는 native cyperQuery를 로그로 찍어준다. 꼭 설정해주자.

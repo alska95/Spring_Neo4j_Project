@@ -2,7 +2,9 @@ package com.example.neo4j.service;
 
 import com.example.neo4j.dto.CastMemberDto;
 import com.example.neo4j.dto.MovieDetailsDto;
+import com.example.neo4j.dto.MovieDto;
 import com.example.neo4j.dto.MovieResultDto;
+import com.example.neo4j.entity.Movie;
 import com.example.neo4j.repository.MovieRepository;
 import org.neo4j.driver.*;
 import org.neo4j.driver.types.TypeSystem;
@@ -34,6 +36,45 @@ public class MovieService {
         this.databaseSelectionProvider = databaseSelectionProvider;
     }
 
+    public void createOrUpdateMovie(MovieDto movieDto){
+        Movie movie = new Movie(
+                movieDto.getTitle(), //pk
+                movieDto.getTagline(),
+                movieDto.getDirectors(),
+                movieDto.getActors(),
+                movieDto.getReleased(),
+                movieDto.getVotes()
+                );
+        movieRepository.save(movie);
+    }
+
+    public MovieDto createByClient(MovieDto movieDto){
+        return this.neo4jClient
+                .query("" +
+                        "CREATE (TheMatrix:Movie {title: $title, released: $released, tagline: $tagline})"
+                )
+                .in(database())
+                .bindAll(Map.of("title", movieDto.getTitle()))
+                .bindAll(Map.of("released", movieDto.getReleased()))
+                .bindAll(Map.of("tagline", movieDto.getTagline()))
+                .fetchAs(MovieDto.class)
+                .one()
+                .orElse(null);
+    }
+
+    public void deleteMovie(MovieDto movieDto){
+        Movie movie = new Movie(
+                movieDto.getTitle(), //pk
+                movieDto.getTagline(),
+                movieDto.getDirectors(),
+                movieDto.getActors(),
+                movieDto.getReleased(),
+                movieDto.getVotes()
+        );
+        movieRepository.delete(movie);
+    }
+
+
     public MovieDetailsDto fetchDetailsByTitle(String title) {
         return this.neo4jClient
                 .query("" +
@@ -53,8 +94,11 @@ public class MovieService {
     public int voteInMovieByTitle(String title) {
         return this.neo4jClient
                 .query( "MATCH (m:Movie {title: $title}) " +
+                        // $title과 일치하는 Movie를 선택한다.
                         "WITH m, coalesce(m.votes, 0) AS currentVotes " +
+                        //선택한 Movie의 값이 null이면 0으로 선택하고 currentVotes라는 변수값을 입힌다.
                         "SET m.votes = currentVotes + 1;" )
+                        // 선택한 Movie의 votes 값을 현재 votes에 1을 더한값으로 set 한다.
                 .in( database() )
                 .bindAll(Map.of("title", title))
                 .run()
@@ -65,7 +109,14 @@ public class MovieService {
     public List<MovieResultDto> searchMoviesByTitle(String title) {
         return this.movieRepository.findSearchResults(title)
                 .stream()
-                .map(MovieResultDto::new)
+                .map(MovieResultDto::new) //.map(v-> new MovieResultDto(v))
+                .collect(Collectors.toList());
+    }
+
+    public List<MovieResultDto> searchMoviesByTitle2(String title) {
+        return movieRepository.findAllByTitleLike(title)
+                .stream()
+                .map(MovieResultDto::new) //v-> new MovieResultDto(v)
                 .collect(Collectors.toList());
     }
 
@@ -120,7 +171,8 @@ public class MovieService {
         return databaseSelectionProvider.getDatabaseSelection().getValue();
     }
 
-    private MovieDetailsDto toMovieDetails(TypeSystem ignored, org.neo4j.driver.Record record) {
+    private MovieDetailsDto
+    toMovieDetails(TypeSystem ignored, org.neo4j.driver.Record record) {
         var movie = record.get("movie");
         return new MovieDetailsDto(
                 movie.get("title").asString(),
