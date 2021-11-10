@@ -1,8 +1,8 @@
-package com.example.neo4j.service;
+package com.example.neo4j.movie.service;
 
 
-import com.example.neo4j.dto.CastMemberDto;
-import com.example.neo4j.dto.MovieDetailsDto;
+import com.example.neo4j.movie.dto.CastMemberDto;
+import com.example.neo4j.movie.dto.MovieDetailsDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.Driver;
@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
@@ -51,6 +49,7 @@ class MovieServiceTest {
         }
     }
 
+    @Test
     void createByDriver(@Autowired Driver driver) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
@@ -62,6 +61,7 @@ class MovieServiceTest {
         }
     }
 
+    @Test
     void deleteByDriver(@Autowired Driver driver) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
@@ -84,7 +84,7 @@ class MovieServiceTest {
         String title = "Matrix Re";
         assertThat(movieService.searchMoviesByTitle2(title))
                 .hasSize(2)
-                .extracting(mr -> mr.getMovie().getTitle()).containsExactlyInAnyOrder("The Matrix Reloaded", "The Matrix Revolutions");
+                .extracting(mr -> mr.getTitle()).containsExactlyInAnyOrder("The Matrix Reloaded", "The Matrix Revolutions");
     }
 
     @Test
@@ -99,6 +99,12 @@ class MovieServiceTest {
     public void fetches_d3_graph(@Autowired MovieService service) {
         Map<String, List<Object>> d3Graph = service.fetchMovieGraph();
 
+        for(String key : d3Graph.keySet()){
+            var cur = d3Graph.get(key);
+            for(Object i : cur){
+                System.out.println("i = " + i);
+            }
+        }
         assertThat(d3Graph).isEqualTo(
                 Map.of(
                         "links", List.of(

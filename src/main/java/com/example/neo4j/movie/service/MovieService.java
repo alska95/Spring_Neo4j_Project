@@ -1,11 +1,11 @@
-package com.example.neo4j.service;
+package com.example.neo4j.movie.service;
 
-import com.example.neo4j.dto.CastMemberDto;
-import com.example.neo4j.dto.MovieDetailsDto;
-import com.example.neo4j.dto.MovieDto;
-import com.example.neo4j.dto.MovieResultDto;
-import com.example.neo4j.entity.Movie;
-import com.example.neo4j.repository.MovieRepository;
+import com.example.neo4j.movie.dto.CastMemberDto;
+import com.example.neo4j.movie.dto.MovieDetailsDto;
+import com.example.neo4j.movie.dto.MovieDto;
+import com.example.neo4j.movie.dto.MovieResultDto;
+import com.example.neo4j.movie.entity.Movie;
+import com.example.neo4j.movie.repository.MovieRepository;
 import org.neo4j.driver.*;
 import org.neo4j.driver.types.TypeSystem;
 import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
@@ -36,7 +36,7 @@ public class MovieService {
         this.databaseSelectionProvider = databaseSelectionProvider;
     }
 
-    public void createOrUpdateMovie(MovieDto movieDto){
+    public Movie createOrUpdateMovie(MovieDto movieDto){
         Movie movie = new Movie(
                 movieDto.getTitle(), //pk
                 movieDto.getTagline(),
@@ -45,7 +45,7 @@ public class MovieService {
                 movieDto.getReleased(),
                 movieDto.getVotes()
                 );
-        movieRepository.save(movie);
+        return movieRepository.save(movie);
     }
 
     public MovieDto createByClient(MovieDto movieDto){
@@ -113,18 +113,15 @@ public class MovieService {
                 .collect(Collectors.toList());
     }
 
-    public List<MovieResultDto> searchMoviesByTitle2(String title) {
-        return movieRepository.findAllByTitleLike(title)
+    public List<MovieDto> searchMoviesByTitle2(String title) {
+        return movieRepository.findMovieByTitleLike(title)
                 .stream()
-                .map(MovieResultDto::new) //v-> new MovieResultDto(v)
+                .map(MovieDto::new) //v-> new MovieResultDto(v)
                 .collect(Collectors.toList());
     }
 
     /**
-     * This is an example of when you might want to use the pure driver in case you have no need for mapping at all, neither in the
-     * form of the way the {@link org.springframework.data.neo4j.core.Neo4jClient} allows and not in form of entities.
-     *
-     * @return A representation D3.js can handle
+     * Neo4jClient나 Repository 사용하지 않고 Driver사용하여 db접근
      */
     public Map<String, List<Object>> fetchMovieGraph() {
 

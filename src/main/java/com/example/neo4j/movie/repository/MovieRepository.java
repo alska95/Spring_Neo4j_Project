@@ -1,11 +1,9 @@
-package com.example.neo4j.repository;
+package com.example.neo4j.movie.repository;
 
-import com.example.neo4j.entity.Movie;
+import com.example.neo4j.movie.entity.Movie;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
-import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,6 +13,8 @@ public interface MovieRepository extends Neo4jRepository<Movie, String> {
 
     @Query("MATCH (movie:Movie) WHERE movie.title CONTAINS $title RETURN movie")
     List<Movie> findSearchResults(@Param("title") String title);
-    List<Movie> findAllByTitleLike(@Param("title") String title); //스프링 DataJpa처럼 메소드명을 기반으로 구현체를 구현해준다.
+    List<Movie> findMovieByTitleLike(@Param("title") String title); //스프링 DataJpa처럼 메소드명을 기반으로 구현체를 구현해준다.
+    List<Movie> findAll();
+
 }
 
