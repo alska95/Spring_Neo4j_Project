@@ -1,5 +1,6 @@
 package com.example.neo4j.movie.entity;
 
+import com.example.neo4j.relationship.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +18,13 @@ import static org.springframework.data.neo4j.core.schema.Relationship.Direction.
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Movie {
     @Id
-    private final String title;
+    private String title;
 
     @Property
-    private final String tagline;
+    private String tagline;
 
     @Relationship(type = "ACTED_IN", direction = INCOMING) //RelationShip 설정
     private List<Role> actors;
