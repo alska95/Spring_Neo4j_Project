@@ -3,7 +3,7 @@ package com.example.neo4j.movie.service;
 import com.example.neo4j.movie.dto.MovieDto;
 import com.example.neo4j.movie.dto.MovieTitleDirectorDto;
 import com.example.neo4j.movie.entity.Movie;
-import com.example.neo4j.relationship.Role;
+import com.example.neo4j.relationship.RolePerson;
 import com.example.neo4j.movie.repository.MovieRepository;
 import com.example.neo4j.person.entity.Person;
 import com.example.neo4j.person.repository.PersonRepository;
@@ -12,15 +12,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Testcontainers
 @SpringBootTest
@@ -42,27 +40,30 @@ public class CRUDTest {
         registry.add("spring.neo4j.uri", () -> "neo4j://localhost:7687"); //도커 사용하지 않고 테스트 진행
         registry.add("spring.neo4j.authentication.username", () -> "neo4j");
         registry.add("spring.neo4j.authentication.password", () -> PASSWORD);
-        registry.add("spring.data.neo4j.database", () -> "neo4j");
+        registry.add("spring.data.neo4j.database", () -> "movies");
     } //테스트환경에서 connection을 제공한다.
 
 
-    @BeforeEach
+    @Test
+    @Transactional
+    @Rollback(value = false)
     public void setUp(){
         personRepository.deleteAll();
         Person 황경하 = personRepository.save(new Person("Hwang", 1995));
         Person 황경하2 = personRepository.save(new Person("Kyeong", 1995));
+
         //새로운 PersonNode 2개를 집어넣는다.
 
-        Role role = new Role(황경하);
-        Role role2 = new Role(황경하2);
+        RolePerson rolePerson = new RolePerson(황경하);
+        RolePerson rolePerson2 = new RolePerson(황경하2);
         //새로운 관계 2개를 정의한다.
 
         movieRepository.deleteAll();
 
-        List<Role> a = new ArrayList<>();
-        List<Role> b = new ArrayList<>();
-        a.add(role);
-        b.add(role2);
+        Set<RolePerson> a = new HashSet<>();
+        Set<RolePerson> b = new HashSet<>();
+        a.add(rolePerson);
+        b.add(rolePerson2);
         //관계 2개를 리스트에 넣는다.
 
         MovieDto movieDto = new MovieDto(
@@ -74,6 +75,8 @@ public class CRUDTest {
                 ,0L
         );
         //관계 2개와 properties를 가지는 MovieDto가 완성됐다.
+
+
         movieService.createOrUpdateMovie(movieDto);
         //완성된 MovieNode를 집어넣는다.
     }
@@ -82,8 +85,8 @@ public class CRUDTest {
     @Test
     public void BasicSearch(){
         List<Movie> metrix2 = movieRepository.findMovieByTitleLike("metrix2");
-        System.out.println("Acted Person = " + metrix2.get(0).getActors().get(0).getPerson().getName());
-        System.out.println("Directed Person = " + metrix2.get(0).getDirectors().get(0).getPerson().getName());
+        metrix2.get(0).getDirectors().forEach(person -> System.out.println("person.getDirectors().getBorn() = " + person.getPerson().getBorn()));
+        metrix2.get(0).getDirectors().forEach(person -> System.out.println("person.getDirectors().getName() = " + person.getPerson().getName()));
         System.out.println("Title  = " + metrix2.get(0).getTitle());
         Assertions.assertThat("metrix2").isEqualTo(metrix2.get(0).getTitle());
     }
@@ -107,6 +110,16 @@ public class CRUDTest {
         List<MovieTitleDirectorDto> met = movieRepository.findTaglineAndDirectorByTitle("met");
         System.out.println("met.get(0).getDirectorName() = " + met.get(0).getDirectorName());
         System.out.println("met.get(0).getTagline() = " + met.get(0).getTagline());
+    }
+
+    @Test
+    @Rollback(value = false)
+    @Transactional
+    public void updateTest(){
+        Person hwang = personRepository.findFirstByName("Hwang");
+        hwang.setBorn(2023);
+        personRepository.save(hwang);
+
     }
 
 

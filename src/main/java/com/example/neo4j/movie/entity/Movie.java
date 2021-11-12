@@ -1,6 +1,6 @@
 package com.example.neo4j.movie.entity;
 
-import com.example.neo4j.relationship.Role;
+import com.example.neo4j.relationship.RolePerson;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.springframework.data.neo4j.core.schema.Relationship.Direction.*;
 
@@ -27,10 +27,10 @@ public class Movie {
     private String tagline;
 
     @Relationship(type = "ACTED_IN", direction = INCOMING) //RelationShip 설정
-    private List<Role> actors;
+    private Set<RolePerson> actors;
 
     @Relationship(type = "DIRECTED", direction = INCOMING) //RelationShip 설정
-    private List<Role> directors;
+    private Set<RolePerson> directors;
 
     @Property
     private Integer released;

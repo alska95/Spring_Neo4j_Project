@@ -1,12 +1,12 @@
 package com.example.neo4j.movie.dto;
 
 import com.example.neo4j.movie.entity.Movie;
-import com.example.neo4j.relationship.Role;
+import com.example.neo4j.relationship.RolePerson;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @Getter
@@ -14,8 +14,8 @@ import java.util.List;
 public class MovieDto {
     private String title;
     private String tagline;
-    private List<Role> actors;
-    private List<Role> directors;
+    private Set<RolePerson> actors;
+    private Set<RolePerson> directors;
     private Integer released;
     private Long votes;
 

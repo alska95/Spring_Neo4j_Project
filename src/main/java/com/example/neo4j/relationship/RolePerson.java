@@ -11,7 +11,7 @@ import org.springframework.data.neo4j.core.schema.TargetNode;
 @RelationshipProperties
 @Getter
 @Setter
-public class Role {
+public class RolePerson {
 
     @Id @GeneratedValue
     private Long id;
@@ -19,7 +19,7 @@ public class Role {
     @TargetNode
     private final Person person;
 
-    public Role(Person person){
+    public RolePerson(Person person){
         this.person = person;
     }
 }

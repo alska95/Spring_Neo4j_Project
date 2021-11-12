@@ -19,4 +19,8 @@ public interface PersonRepository extends Neo4jRepository<Person , String> {
             "where m contains $title return p")
     List<Person> findPersonByRelationShipAndMovieTitle(@Param("title") String title);
 
+    Person findFirstByName(@Param("name") String name);
+
+    @Query("match (p:Person {name:$name}) set p.born = $born ")
+    void updatePersonBornByName(String name, Integer born);
 }
