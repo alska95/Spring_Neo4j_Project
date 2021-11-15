@@ -1,14 +1,14 @@
 package com.example.neo4j.movie.service;
 
-import com.example.neo4j.movie.dto.MovieDto;
-import com.example.neo4j.movie.dto.MovieTitleDirectorDto;
-import com.example.neo4j.movie.entity.Movie;
+import com.example.neo4j.dto.movie.MovieDto;
+import com.example.neo4j.dto.movie.MovieTitleDirectorDto;
+import com.example.neo4j.entity.Movie;
 import com.example.neo4j.relationship.RolePerson;
-import com.example.neo4j.movie.repository.MovieRepository;
-import com.example.neo4j.person.entity.Person;
-import com.example.neo4j.person.repository.PersonRepository;
+import com.example.neo4j.repository.MovieRepository;
+import com.example.neo4j.entity.Person;
+import com.example.neo4j.repository.PersonRepository;
+import com.example.neo4j.service.MovieService;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

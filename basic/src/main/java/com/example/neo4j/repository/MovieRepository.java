@@ -1,16 +1,13 @@
-package com.example.neo4j.movie.repository;
+package com.example.neo4j.repository;
 
-import com.example.neo4j.movie.dto.MovieTitleDirectorDto;
-import com.example.neo4j.movie.entity.Movie;
-import com.example.neo4j.person.entity.Person;
+import com.example.neo4j.dto.movie.MovieTitleDirectorDto;
+import com.example.neo4j.entity.Movie;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository //그냥 명시적으로 적어둠 (SimpleNeo4jRepository가 @Repository빈으로 이미 등록되어 있다.)
 public interface MovieRepository extends Neo4jRepository<Movie, String> {

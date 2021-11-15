@@ -1,4 +1,4 @@
-package com.example.neo4j.movie.dto;
+package com.example.neo4j.dto.movie;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

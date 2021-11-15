@@ -1,8 +1,8 @@
-package com.example.neo4j.person.service;
+package com.example.neo4j.service;
 
-import com.example.neo4j.person.dto.PersonDto;
-import com.example.neo4j.person.entity.Person;
-import com.example.neo4j.person.repository.PersonRepository;
+import com.example.neo4j.dto.person.PersonDto;
+import com.example.neo4j.entity.Person;
+import com.example.neo4j.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +13,7 @@ public class PersonService {
         return new Person(
                 personDto.getName(),
                 personDto.getBorn()
+
         );
     }
 

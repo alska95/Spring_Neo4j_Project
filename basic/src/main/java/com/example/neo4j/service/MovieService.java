@@ -1,11 +1,11 @@
-package com.example.neo4j.movie.service;
+package com.example.neo4j.service;
 
-import com.example.neo4j.movie.dto.CastMemberDto;
-import com.example.neo4j.movie.dto.MovieDetailsDto;
-import com.example.neo4j.movie.dto.MovieDto;
-import com.example.neo4j.movie.dto.MovieResultDto;
-import com.example.neo4j.movie.entity.Movie;
-import com.example.neo4j.movie.repository.MovieRepository;
+import com.example.neo4j.dto.movie.CastMemberDto;
+import com.example.neo4j.dto.movie.MovieDetailsDto;
+import com.example.neo4j.dto.movie.MovieDto;
+import com.example.neo4j.dto.movie.MovieResultDto;
+import com.example.neo4j.entity.Movie;
+import com.example.neo4j.repository.MovieRepository;
 import org.neo4j.driver.*;
 import org.neo4j.driver.types.TypeSystem;
 import org.springframework.data.neo4j.core.DatabaseSelectionProvider;

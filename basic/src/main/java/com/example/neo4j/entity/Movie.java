@@ -1,4 +1,4 @@
-package com.example.neo4j.movie.entity;
+package com.example.neo4j.entity;
 
 import com.example.neo4j.relationship.RolePerson;
 import lombok.AllArgsConstructor;

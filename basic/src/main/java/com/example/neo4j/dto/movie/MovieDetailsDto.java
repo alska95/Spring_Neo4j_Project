@@ -1,4 +1,4 @@
-package com.example.neo4j.movie.dto;
+package com.example.neo4j.dto.movie;
 
 
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.*;
 @AllArgsConstructor
 public class MovieDetailsDto {
     private final String title;
-    private final List<com.example.neo4j.movie.dto.CastMemberDto> cast;
+    private final List<CastMemberDto> cast;
 
     @Override
     public boolean equals(Object o) {

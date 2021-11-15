@@ -1,8 +1,8 @@
-package com.example.neo4j.movie.controller;
+package com.example.neo4j.controller;
 
-import com.example.neo4j.movie.dto.MovieDetailsDto;
-import com.example.neo4j.movie.dto.MovieResultDto;
-import com.example.neo4j.movie.service.MovieService;
+import com.example.neo4j.dto.movie.MovieDetailsDto;
+import com.example.neo4j.dto.movie.MovieResultDto;
+import com.example.neo4j.service.MovieService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

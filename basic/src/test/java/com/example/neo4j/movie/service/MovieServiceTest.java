@@ -1,8 +1,9 @@
 package com.example.neo4j.movie.service;
 
 
-import com.example.neo4j.movie.dto.CastMemberDto;
-import com.example.neo4j.movie.dto.MovieDetailsDto;
+import com.example.neo4j.dto.movie.CastMemberDto;
+import com.example.neo4j.dto.movie.MovieDetailsDto;
+import com.example.neo4j.service.MovieService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.Driver;

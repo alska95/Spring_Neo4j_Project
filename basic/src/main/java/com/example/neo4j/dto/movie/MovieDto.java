@@ -1,6 +1,6 @@
-package com.example.neo4j.movie.dto;
+package com.example.neo4j.dto.movie;
 
-import com.example.neo4j.movie.entity.Movie;
+import com.example.neo4j.entity.Movie;
 import com.example.neo4j.relationship.RolePerson;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.example.neo4j.relationship;
 
-import com.example.neo4j.person.entity.Person;
+import com.example.neo4j.entity.Person;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;

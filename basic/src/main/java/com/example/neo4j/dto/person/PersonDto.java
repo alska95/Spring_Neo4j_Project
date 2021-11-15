@@ -1,4 +1,4 @@
-package com.example.neo4j.person.dto;
+package com.example.neo4j.dto.person;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

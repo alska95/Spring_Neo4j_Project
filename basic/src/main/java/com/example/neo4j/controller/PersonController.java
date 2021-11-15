@@ -1,9 +1,8 @@
-package com.example.neo4j.person.controller;
+package com.example.neo4j.controller;
 
 
-import com.example.neo4j.person.dto.PersonDto;
-import com.example.neo4j.person.entity.Person;
-import com.example.neo4j.person.service.PersonService;
+import com.example.neo4j.dto.person.PersonDto;
+import com.example.neo4j.service.PersonService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
