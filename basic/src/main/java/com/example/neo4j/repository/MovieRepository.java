@@ -23,12 +23,12 @@ public interface MovieRepository extends Neo4jRepository<Movie, String> {
     @Query("MATCH (movie:Movie) WHERE movie.title =~ '.*'+$title+'.*' RETURN movie")
     List<Movie> findRegexByTitle(@Param("title") String title);
 
-
     @Query("MATCH (person:Person) -[DIRECTED]-> (movie:Movie) " +
             "where movie.title =~ '.*'+$title+'.*' " +
             "return movie, movie.tagline as tagline, person.name as directorName")
-    List<MovieTitleDirectorDto> findTaglineAndDirectorByTitle(@Param("title") String title);
+    List<MovieTitleDirectorDto> findByProjection(@Param("title") String title);
 
+    Movie findFirstByTitleLike(@Param("title") String title);
 
 }
 

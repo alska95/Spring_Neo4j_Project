@@ -1,7 +1,5 @@
 package com.example.neo4j.service;
 
-import com.example.neo4j.dto.movie.CastMemberDto;
-import com.example.neo4j.dto.movie.MovieDetailsDto;
 import com.example.neo4j.dto.movie.MovieDto;
 import com.example.neo4j.dto.movie.MovieResultDto;
 import com.example.neo4j.entity.Movie;
@@ -74,22 +72,6 @@ public class MovieService {
         movieRepository.delete(movie);
     }
 
-
-    public MovieDetailsDto fetchDetailsByTitle(String title) {
-        return this.neo4jClient
-                .query("" +
-                        "MATCH (movie:Movie {title: $title}) " +
-                        "OPTIONAL MATCH (person:Person)-[r]->(movie) " +
-                        "WITH movie, COLLECT({ name: person.name, job: REPLACE(TOLOWER(TYPE(r)), '_in', ''), role: HEAD(r.roles) }) as cast " +
-                        "RETURN movie { .title, cast: cast }"
-                )
-                .in(database())
-                .bindAll(Map.of("title", title))
-                .fetchAs(MovieDetailsDto.class)
-                .mappedBy(this::toMovieDetails)
-                .one()
-                .orElse(null);
-    }
 
     public int voteInMovieByTitle(String title) {
         return this.neo4jClient
@@ -168,22 +150,4 @@ public class MovieService {
         return databaseSelectionProvider.getDatabaseSelection().getValue();
     }
 
-    private MovieDetailsDto
-    toMovieDetails(TypeSystem ignored, org.neo4j.driver.Record record) {
-        var movie = record.get("movie");
-        return new MovieDetailsDto(
-                movie.get("title").asString(),
-                movie.get("cast").asList((member) -> {
-                    var result = new CastMemberDto(
-                            member.get("name").asString(),
-                            member.get("job").asString()
-                    );
-                    var role = member.get("role");
-                    if (role.isNull()) {
-                        return result;
-                    }
-                    return result.withRole(role.asString());
-                })
-        );
-    }
 }

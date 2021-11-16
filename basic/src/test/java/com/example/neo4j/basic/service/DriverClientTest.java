@@ -1,8 +1,5 @@
-package com.example.neo4j.movie.service;
+package com.example.neo4j.basic.service;
 
-
-import com.example.neo4j.dto.movie.CastMemberDto;
-import com.example.neo4j.dto.movie.MovieDetailsDto;
 import com.example.neo4j.service.MovieService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
 @SpringBootTest
-class MovieServiceTest {
+class DriverClientTest {
 
     private static final String PASSWORD = "movies";
 
@@ -73,29 +70,8 @@ class MovieServiceTest {
         }
     }
 
-    @Test
-    public void searches_movies_by_title() {
-        String title = "Matrix Re";
-        assertThat(movieService.searchMoviesByTitle(title))
-                .hasSize(2)
-                .extracting(mr -> mr.getMovie().getTitle()).containsExactlyInAnyOrder("The Matrix Reloaded", "The Matrix Revolutions");
-    }
 
-    @Test
-    public void searches_movies_by_title2() {
-        String title = "Matrix Re";
-        assertThat(movieService.searchMoviesByTitle2(title))
-                .hasSize(2)
-                .extracting(mr -> mr.getTitle()).containsExactlyInAnyOrder("The Matrix Reloaded", "The Matrix Revolutions");
-    }
 
-    @Test
-    public void fetches_movie_details() {
-        MovieDetailsDto details = movieService.fetchDetailsByTitle("The Matrix");
-
-        assertThat(details.getTitle()).isEqualTo("The Matrix");
-        assertThat(details.getCast()).containsExactly(new CastMemberDto("Keanu Reeves", "acted", "Neo"));
-    }
 
     @Test
     public void fetches_d3_graph(@Autowired MovieService service) {

@@ -1,6 +1,5 @@
 package com.example.neo4j.controller;
 
-import com.example.neo4j.dto.movie.MovieDetailsDto;
 import com.example.neo4j.dto.movie.MovieResultDto;
 import com.example.neo4j.service.MovieService;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +13,6 @@ public class MovieController {
 
     public MovieController(MovieService movieService) {
         this.movieService = movieService;
-    }
-
-    @GetMapping("/movie/{title}")
-    public MovieDetailsDto findByTitle(@PathVariable("title") String title) {
-        return movieService.fetchDetailsByTitle(title);
     }
 
     @PostMapping("/movie/{title}/vote")
