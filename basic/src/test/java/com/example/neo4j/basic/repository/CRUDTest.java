@@ -25,6 +25,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
 
+@Transactional
 @Testcontainers
 @SpringBootTest
 public class CRUDTest {
@@ -111,11 +112,12 @@ public class CRUDTest {
     @Test
     public void persistenceContextTest(){
         System.out.println("=======persistenceContextTest===========");
-        Location suwon = locationRepository.findFirstByCityLike("suwon");//method명을 기반으로 자동 구현된 default SpringDataNeo4j Method
+        Location suwon = locationRepository.findById("suwon").get();//method명을 기반으로 자동 구현된 default SpringDataNeo4j Method
         System.out.println("================persistenceContextTest mid=====================");
-        Location suwon2 = locationRepository.findFirstByCityLike("suwon");
+        Location suwon2 = locationRepository.findById("suwon").get();
         System.out.println("==========persistenceContextTest end===========");
         assertThat(suwon).isNotEqualTo(suwon2); //SDN은 persistenceContext와 비슷한 기능을 제공하지 않기에? 이 테스트는 통과함.
+        // entitymanager과 비슷한 기능이 있는지 찾아봐야할듯
     }
 
     @Test

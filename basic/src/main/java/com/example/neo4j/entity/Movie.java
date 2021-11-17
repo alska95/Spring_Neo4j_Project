@@ -20,8 +20,7 @@ import static org.springframework.data.neo4j.core.schema.Relationship.Direction.
 @AllArgsConstructor
 @NoArgsConstructor
 public class Movie {
-    @Relationship(type = "DIRECTED", direction = INCOMING) //RelationShip 설정
-    private Set<Role> directors;
+
 
     @Id
     private String title;
@@ -32,7 +31,8 @@ public class Movie {
     @Relationship(type = "ACTED_IN", direction = INCOMING) //RelationShip 설정
     private Set<Role> actors;
 
-
+    @Relationship(type = "DIRECTED", direction = INCOMING) //RelationShip 설정
+    private Set<Role> directors;
 
     @Property
     private Integer released;
