@@ -1,4 +1,4 @@
-package com.example.efficiency.entity;
+package com.example.efficiency.rdbms.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,11 +15,13 @@ import java.util.List;
 @Setter
 public class City {
     @Id
-    private Long id;
+    private int id;
 
     private String name;
 
     private String address;
+
+    private int fee;
 
 /*
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,9 +35,10 @@ public class City {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "end")
     private List<Route> end;
 
-    public City(Long id, String name , String address) {
+    public City(int id, String name , String address , int fee) {
         this.id = id;
         this.name = name;
         this.address = address;
+        this.fee = fee;
     }
 }

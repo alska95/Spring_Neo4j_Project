@@ -33,8 +33,6 @@ public class CRUDTest {
     @Autowired
     private MovieService movieService;
 
-
-
     @Autowired
     private MovieRepository movieRepository;
 
@@ -102,7 +100,6 @@ public class CRUDTest {
         );
         //관계 2개와 properties를 가지는 MovieDto가 완성됐다.
 
-
         movieService.createOrUpdateMovie(movieDto);
         //완성된 MovieNode를 집어넣는다.
     }
@@ -147,10 +144,14 @@ public class CRUDTest {
 
     @Test
     public void biDirectionTest() { //양방향관계 설정 순환 참조가 발생하지는 않는지?
+
+        Movie metrix2 = movieRepository.findFirstByTitleLike("metrix2");
+        metrix2.getActors().forEach(v-> System.out.println("actorList = " + v.getPerson().getName()));
+
         System.out.println("===================biDirectionTest==========");
         Person hwang = personRepository.findFirstByName("Hwang");
         System.out.println("===================biDirectionTest mid==========");
-//        hwang.getDirected().forEach(v-> System.out.println("v.getMovie().getTitle() = " + v.getTitle()));
+        hwang.getDirectors().forEach(v-> System.out.println("v.getMovie().getTitle() = " + v.getMovie().getTitle()));
         System.out.println("===================biDirectionTest end==========");
     }
 

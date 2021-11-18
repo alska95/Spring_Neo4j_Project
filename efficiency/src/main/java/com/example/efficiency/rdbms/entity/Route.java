@@ -1,4 +1,4 @@
-package com.example.efficiency.entity;
+package com.example.efficiency.rdbms.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
