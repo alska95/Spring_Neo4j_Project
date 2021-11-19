@@ -24,4 +24,9 @@ public class RouteNeo {
 
     @TargetNode
     private CityNeo targetCity;
+
+    public RouteNeo(CityNeo targetCity, int cost) {
+        this.targetCity = targetCity;
+        this.cost = cost;
+    }
 }

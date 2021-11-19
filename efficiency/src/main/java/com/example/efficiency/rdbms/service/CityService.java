@@ -1,43 +1,43 @@
-package com.example.efficiency.repository;
+package com.example.efficiency.rdbms.service;
 
-import com.example.efficiency.rdbms.entity.Route;
+import com.example.efficiency.neo4j.repository.CityNeoRepository;
+import com.example.efficiency.neo4j.service.CityNeoService;
 import com.example.efficiency.rdbms.entity.City;
+import com.example.efficiency.rdbms.entity.Route;
 import com.example.efficiency.rdbms.repository.CityJpaRepository;
 import com.example.efficiency.rdbms.repository.RouteJpaRepository;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import java.util.List;
 import java.util.UUID;
 
-@Transactional
-@SpringBootTest
-class CityJPARepositoryTest {
-
-    @Autowired
-    private CityJpaRepository cityJpaRepository;
-    @Autowired
-    private RouteJpaRepository routeJpaRepository;
+@Service
+public class CityService {
 
     @PersistenceContext
     private EntityManager em;
 
-    @Test
-    @Rollback(value = false) //도시를 순회하며 최소값, 최대값 , 평균 순회 비용을 찾는 테스트
-    public void testEfficiency(){
-        int joinCount =20;
-        int dataCount =1;
+    private final CityJpaRepository cityJpaRepository;
+    private final RouteJpaRepository routeJpaRepository;
+
+    private final CityNeoRepository cityNeoRepository;
+    private final CityNeoService cityNeoService;
+
+    public CityService(CityJpaRepository cityJpaRepository, RouteJpaRepository routeJpaRepository, CityNeoRepository cityNeoRepository, CityNeoService cityNeoService) {
+        this.cityJpaRepository = cityJpaRepository;
+        this.routeJpaRepository = routeJpaRepository;
+        this.cityNeoRepository = cityNeoRepository;
+        this.cityNeoService = cityNeoService;
+    }
+
+    public int calculateCityTraverseCostJPA(int joinCount , int dataCount, int unNecessaryDataRatio){
         for(int i = 1 ; i <= joinCount ; i++){
             cityJpaRepository.save(new City(i,
-                    "City"+i,
-                    Long.toString(UUID.randomUUID().getMostSignificantBits(), 36),
-                    (int)(Math.random()*10)
+                            "City"+i,
+                            Long.toString(UUID.randomUUID().getMostSignificantBits(), 36),
+                            (int)(Math.random()*10)
                     )
             );
         }
@@ -51,9 +51,9 @@ class CityJPARepositoryTest {
         }
         for(int i = 1 ; i< joinCount ; i++){ //유효하지 않은 라우트의 갯수(조인할때 필요 없는 데이터)
             City start = cityJpaRepository.findById(i).get();
-            for(int j = 0 ; j < dataCount*5 ; j++){
+            for(int j = 0 ; j < dataCount*unNecessaryDataRatio ; j++){
                 int iter = (int)(Math.random()*joinCount+1);
-                if(iter == i+1){ //이러면 유효라우트로 견결되기 때문에, 다른 라우트로 바꾸어준다.
+                if(iter == i+1){ //이러면 유효라우트로 연결되기 때문에, 다른 라우트로 바꾸어준다.
                     iter += i+1 < joinCount ? 1: -1;
                     if(iter == 0)
                         iter = joinCount-1;
@@ -106,11 +106,12 @@ class CityJPARepositoryTest {
             st.append("and "+variantList[i]+".end_id = "+variantList[i+1]+".start_id ");
         }
         st.append(";");
-        long startTime = System.currentTimeMillis();
+        int startTime = (int)System.currentTimeMillis();
         List<Integer> result = em.createNativeQuery(st.toString())
                 .getResultList();
-        long spentTime = System.currentTimeMillis()-startTime;
+        int spentTime = (int)System.currentTimeMillis()-startTime;
         System.out.println("spentTime = " + spentTime);
         System.out.println("result.size() = " + result.size());
+        return spentTime;
     }
 }
