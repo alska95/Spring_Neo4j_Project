@@ -1,5 +1,6 @@
 package com.example.efficiency.neo4j.service;
 
+import com.example.efficiency.compare.dto.ResultDto;
 import com.example.efficiency.neo4j.entity.CityNeo;
 import com.example.efficiency.neo4j.relationship.RouteNeo;
 import com.example.efficiency.neo4j.repository.CityNeoRepository;
@@ -7,6 +8,7 @@ import org.neo4j.driver.Driver;
 import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,8 +43,8 @@ public class CityNeoService {
      * ->
      * (c3:CityNeo{name:"City3"})
      * return
-     * r1.cost*(1+c1.fee) +
-     * r2.cost*(1+c2.fee);
+     * r1.cost*(1+c1.fee/100) +
+     * r2.cost*(1+c2.fee/100);
      * 이와 같은 cyper쿼리를 동적으로 생성
     *
     * */
@@ -78,7 +80,8 @@ public class CityNeoService {
         return collect;
     }
 
-    public int calculateCityTraverseCostNeo(int joinCount, int dataCount , int unNecessaryDataRatio){
+    @Transactional
+    public ResultDto calculateCityTraverseCostNeo(int joinCount, int dataCount , int unNecessaryDataRatio){
         cityNeoRepository.deleteAll();
         for(int i = 1 ; i <= joinCount ; i++){
             cityNeoRepository.save(new CityNeo(i,
@@ -119,7 +122,58 @@ public class CityNeoService {
         int spentTime = (int)System.currentTimeMillis() - startTime;
         System.out.println("================ Fetch result end ===============");
         System.out.println("result.size() = " + result.size());
-        return spentTime;
+        List<Integer> resultList = result.stream().collect(Collectors.toList());
+        return new ResultDto(spentTime, resultList);
+    }
+
+    @Transactional
+    public List<ResultDto> calculateCostNeoStartingOne(int joinCount, int dataCount , int unNecessaryDataRatio){
+        cityNeoRepository.deleteAll();
+        for(int i = 1 ; i <= joinCount ; i++){
+            cityNeoRepository.save(new CityNeo(i,
+                            "City"+i,
+                            Long.toString(UUID.randomUUID().getMostSignificantBits(), 36),
+                            (int)(Math.random()*10)
+                    )
+            );
+        }
+        for(int i = 1 ; i < joinCount ; i++){//다음 city와 이어지는 라우트 (유효한 라우트 - 조인할때 필요)
+            CityNeo start = cityNeoRepository.findById(i).get();
+            CityNeo end = cityNeoRepository.findById(i+1).get();
+            for(int j = 0; j < dataCount ; j++){
+                int cost = (int)(Math.random()*10000);
+                start.getRoute().add(new RouteNeo(end, cost));
+                cityNeoRepository.save(start);
+            }
+        }
+        for(int i = 1 ; i< joinCount ; i++){ //유효하지 않은 라우트의 갯수(조인할때 필요 없는 데이터)
+            CityNeo start = cityNeoRepository.findById(i).get();
+            for(int j = 0 ; j < dataCount*unNecessaryDataRatio ; j++){
+                int iter = (int)(Math.random()*joinCount+1);
+                if(iter == i+1){ //이러면 유효라우트로 연결되기 때문에, 다른 라우트로 바꾸어준다.
+                    iter += i+1 < joinCount ? 1: -1;
+                    if(iter == 0)
+                        iter = joinCount-1;
+                }
+                CityNeo end = cityNeoRepository.findById(iter).get();
+                int cost = (int)(Math.random()*10000);
+                start.getRoute().add(new RouteNeo(end, cost));
+                cityNeoRepository.save(start);
+            }
+        }
+
+        List<ResultDto> resultDtos = new ArrayList<>();
+        for(int i = 1 ; i <= joinCount ; i++){
+            System.out.println("================ Fetch result start ===============");
+            int startTime = (int)System.currentTimeMillis();
+            Collection<Integer> result = createDynamicCypher(i, dataCount);
+            int spentTime = (int)System.currentTimeMillis() - startTime;
+            System.out.println("================ Fetch result end ===============");
+            System.out.println("result.size() = " + result.size());
+            List<Integer> resultList = result.stream().collect(Collectors.toList());
+            resultDtos.add(new ResultDto(spentTime, resultList));
+        }
+        return resultDtos;
     }
 
     private String database() {

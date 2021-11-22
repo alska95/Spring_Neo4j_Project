@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @Getter
 @Setter
 public class City {
@@ -29,11 +29,11 @@ public class City {
     private Person friend;
 */
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "start")
+/*    @OneToMany(fetch = FetchType.LAZY, mappedBy = "start")
     private List<Route> start;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "end")
-    private List<Route> end;
+    private List<Route> end;*/
 
     public City(int id, String name , String address , int fee) {
         this.id = id;

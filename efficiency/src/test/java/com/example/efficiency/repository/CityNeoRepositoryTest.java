@@ -39,7 +39,7 @@ class CityNeoRepositoryTest {
     @Transactional
     public void efficiencyTest(){
         cityNeoRepository.deleteAll();
-        int joinCount = 20;
+        int joinCount = 10;
         int dataCount = 1;
         for(int i = 1 ; i <= joinCount ; i++){
             cityNeoRepository.save(new CityNeo(i,

@@ -31,7 +31,7 @@ class CityJPARepositoryTest {
     @Test
     @Rollback(value = false) //도시를 순회하며 최소값, 최대값 , 평균 순회 비용을 찾는 테스트
     public void testEfficiency(){
-        int joinCount =20;
+        int joinCount =10;
         int dataCount =1;
         for(int i = 1 ; i <= joinCount ; i++){
             cityJpaRepository.save(new City(i,
