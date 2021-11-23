@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,10 +31,15 @@ public class CityService {
     private final RouteFiveJpaRepository routeFiveJpaRepository;
     private final RouteSixJpaRepository routeSixJpaRepository;
     private final RouteSevenJpaRepository routeSevenJpaRepository;
+    private final RouteEightJpaRepository routeEightJpaRepository;
+    private final RouteNineJpaRepository routeNineJpaRepository;
+    private final RouteTenJpaRepository routeTenJpaRepository;
+    private final RouteElevenJpaRepository routeElevenJpaRepository;
 
 
 
-    public CityService(CityJpaRepository cityJpaRepository, RouteJpaRepository routeJpaRepository, RouteOneJpaRepository routeOneJpaRepository, RouteTwoJpaRepository routeTwoJpaRepository, RouteThreeJpaRepository routeThreeJpaRepository, RouteFourJpaRepository routeFourJpaRepository, RouteFiveJpaRepository routeFiveJpaRepository, RouteSixJpaRepository routeSixJpaRepository, RouteSevenJpaRepository routeSevenJpaRepository) {
+
+    public CityService(CityJpaRepository cityJpaRepository, RouteJpaRepository routeJpaRepository, RouteOneJpaRepository routeOneJpaRepository, RouteTwoJpaRepository routeTwoJpaRepository, RouteThreeJpaRepository routeThreeJpaRepository, RouteFourJpaRepository routeFourJpaRepository, RouteFiveJpaRepository routeFiveJpaRepository, RouteSixJpaRepository routeSixJpaRepository, RouteSevenJpaRepository routeSevenJpaRepository, RouteEightJpaRepository routeEightJpaRepository, RouteNineJpaRepository routeNineJpaRepository, RouteTenJpaRepository routeTenJpaRepository, RouteElevenJpaRepository routeElevenJpaRepository) {
         this.cityJpaRepository = cityJpaRepository;
         this.routeJpaRepository = routeJpaRepository;
         this.routeOneJpaRepository = routeOneJpaRepository;
@@ -43,6 +49,10 @@ public class CityService {
         this.routeFiveJpaRepository = routeFiveJpaRepository;
         this.routeSixJpaRepository = routeSixJpaRepository;
         this.routeSevenJpaRepository = routeSevenJpaRepository;
+        this.routeEightJpaRepository = routeEightJpaRepository;
+        this.routeNineJpaRepository = routeNineJpaRepository;
+        this.routeTenJpaRepository = routeTenJpaRepository;
+        this.routeElevenJpaRepository = routeElevenJpaRepository;
     }
 
     @Transactional
@@ -132,8 +142,68 @@ public class CityService {
         return new ResultDto(spentTime, result);
     }
 
+
     @Transactional
-    public ResultDto calculateCostWithSeparateRouteJPA(int joinCount , int dataCount, int unNecessaryDataRatio){
+    public List<ResultDto> calculateCostWithSeparateRouteJPA(int joinCount , int dataCount, int unNecessaryDataRatio){
+        createDataSet(joinCount,dataCount,unNecessaryDataRatio);
+
+        char[] variantList = new char[joinCount+1];
+        variantList[0] = 'a';
+        for(int i = 1; i < joinCount ;i++){
+            variantList[i] = (char)(65 + i);
+        }
+        /**
+         *
+         * select
+         * B.cost*(1+ Bcity.fee/100)+C.cost*(1+ Ccity.fee/100)+D.cost*(1+ Dcity.fee/100)
+         *  from
+         * (select * from route where start_id = 1) B , (select * from route where start_id = 2) C,
+         * (select * from route where start_id = 3) D ,
+         * (select fee from city where id = 1) as Bcity,
+         * (select fee from city where id = 2) as Ccity,
+         * (select fee from city where id =3) as Dcity
+         * where 1=1
+         * and B.end_id = C.start_id and C.end_id = D.start_id ;
+         *
+         *                 이런 쿼리를 동적으로 만들어서 NativeQuery로 날리고자
+         *                 아래와 같은 코드를 작성함..
+         * */
+
+        List<ResultDto> resultDtos = new ArrayList<>();
+
+        for(int tmp = 2; tmp <=joinCount ; tmp++){
+            StringBuilder sb = new StringBuilder();
+            sb.append("select ");
+            for(int i = 1 ; i < tmp ; i++){
+                sb.append( variantList[i]+".cost*(1+ "+variantList[i]+"city.fee/100)+");
+            }
+            sb.deleteCharAt(sb.length()-1);
+            sb.append(" from ");
+            for(int i = 1 ; i < tmp ; i++){
+                sb.append("(select * from route"+variantList[i-1]+" where start_id = "+i+") "+variantList[i]+" ,");
+            }
+            for(int i = 1 ; i < tmp ; i++){
+                sb.append("(select fee from city where id = "+i+") "+variantList[i]+"city ,");
+            }
+            sb.deleteCharAt(sb.length()-1);
+            sb.append("where 1=1 ");
+            for(int i = 1 ; i < tmp-1 ; i++){
+                sb.append("and "+variantList[i]+".end_id = "+variantList[i+1]+".start_id ");
+            }
+            sb.append("and "+variantList[tmp-1]+".end_id = "+tmp);
+            sb.append(";");
+            int startTime = (int)System.currentTimeMillis();
+            List<Integer> result = em.createNativeQuery(sb.toString())
+                    .getResultList();
+            int spentTime = (int)System.currentTimeMillis()-startTime;
+            System.out.println("spentTime = " + spentTime);
+            System.out.println("result.size() = " + result.size());
+            resultDtos.add(new ResultDto(spentTime, result));
+        }
+        return resultDtos;
+    }
+
+    private void createDataSet(int joinCount , int dataCount, int unNecessaryDataRatio){
         routeJpaRepository.deleteAll();
         cityJpaRepository.deleteAll();
         for(int i = 1 ; i <= joinCount ; i++){
@@ -169,8 +239,20 @@ public class CityService {
                     case 6:
                         routeSixJpaRepository.save(new RouteF(start, end ,cost));
                         break;
-                    default:
+                    case 7:
                         routeSevenJpaRepository.save(new RouteG(start, end ,cost));
+                        break;
+                    case 8:
+                        routeEightJpaRepository.save(new RouteH(start, end ,cost));
+                        break;
+                    case 9:
+                        routeNineJpaRepository.save(new RouteI(start, end ,cost));
+                        break;
+                    case 10:
+                        routeTenJpaRepository.save(new RouteJ(start, end ,cost));
+                        break;
+                    default:
+                        routeElevenJpaRepository.save(new RouteK(start, end ,cost));
                         break;
                 }
             }
@@ -205,63 +287,26 @@ public class CityService {
                     case 6:
                         routeSixJpaRepository.save(new RouteF(start, end ,cost));
                         break;
-                    default:
+                    case 7:
                         routeSevenJpaRepository.save(new RouteG(start, end ,cost));
+                        break;
+                    case 8:
+                        routeEightJpaRepository.save(new RouteH(start, end ,cost));
+                        break;
+                    case 9:
+                        routeNineJpaRepository.save(new RouteI(start, end ,cost));
+                        break;
+                    case 10:
+                        routeTenJpaRepository.save(new RouteJ(start, end ,cost));
+                        break;
+                    default:
+                        routeElevenJpaRepository.save(new RouteK(start, end ,cost));
                         break;
                 }
             }
         }
         em.flush();
         em.clear();
-        String sql="";
-        char[] variantList = new char[joinCount+1];
-        variantList[0] = 'a';
-        for(int i = 1; i < joinCount ;i++){
-            variantList[i] = (char)(65 + i);
-        }
-        /**
-         *
-         * select
-         * B.cost*(1+ Bcity.fee/100)+C.cost*(1+ Ccity.fee/100)+D.cost*(1+ Dcity.fee/100)
-         *  from
-         * (select * from route where start_id = 1) B , (select * from route where start_id = 2) C,
-         * (select * from route where start_id = 3) D ,
-         * (select fee from city where id = 1) as Bcity,
-         * (select fee from city where id = 2) as Ccity,
-         * (select fee from city where id =3) as Dcity
-         * where 1=1
-         * and B.end_id = C.start_id and C.end_id = D.start_id ;
-         *
-         *                 이런 쿼리를 동적으로 만들어서 NativeQuery로 날리고자
-         *                 아래와 같은 코드를 작성함..
-         * */
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("select ");
-        for(int i = 1 ; i < joinCount ; i++){
-            sb.append( variantList[i]+".cost*(1+ "+variantList[i]+"city.fee/100)+");
-        }
-        sb.deleteCharAt(sb.length()-1);
-        sb.append(" from ");
-        for(int i = 1 ; i < joinCount ; i++){
-            sb.append("(select * from route"+variantList[i-1]+" where start_id = "+i+") "+variantList[i]+" ,");
-        }
-        for(int i = 1 ; i < joinCount ; i++){
-            sb.append("(select fee from city where id = "+i+") "+variantList[i]+"city ,");
-        }
-        sb.deleteCharAt(sb.length()-1);
-        sb.append("where 1=1 ");
-        for(int i = 1 ; i < joinCount-1 ; i++){
-            sb.append("and "+variantList[i]+".end_id = "+variantList[i+1]+".start_id ");
-        }
-        sb.append("and "+variantList[joinCount-1]+".end_id = "+joinCount);
-        sb.append(";");
-        int startTime = (int)System.currentTimeMillis();
-        List<Integer> result = em.createNativeQuery(sb.toString())
-                .getResultList();
-        int spentTime = (int)System.currentTimeMillis()-startTime;
-        System.out.println("spentTime = " + spentTime);
-        System.out.println("result.size() = " + result.size());
-        return new ResultDto(spentTime, result);
     }
 }
