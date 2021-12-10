@@ -23,6 +23,4 @@ public class Region {
     private String regionName;
     private String deleteFlag;
 
-    @Relationship(type = "HAS_EAI_INFO", direction = INCOMING)
-    private List<EAIInformation> eaiInformation;
 }

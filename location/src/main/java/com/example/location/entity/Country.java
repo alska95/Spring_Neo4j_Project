@@ -28,6 +28,4 @@ public class Country {
     private String euCountryFlag;
     private String deleteFlag;
 
-    @Relationship(type = "HAS_EAI_INFO", direction = INCOMING)
-    private List<EAIInformation> eaiInformation;
 }

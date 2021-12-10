@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
@@ -17,6 +18,7 @@ import static org.springframework.data.neo4j.core.schema.Relationship.Direction.
 @NoArgsConstructor
 @AllArgsConstructor
 public class DaylightSavingTime {
+    @Id
     private String daylightSavingTimeYear;
     private String daylightSavingTimeMinutes;
     private String start_daylight_saving_time_rule_description;

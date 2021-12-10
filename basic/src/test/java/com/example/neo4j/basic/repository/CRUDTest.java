@@ -107,6 +107,19 @@ public class CRUDTest {
 
 
     @Test
+    public void depthTest(){ //depth = infinite
+        System.out.println("=======depthTest===========");
+        Movie metrix2 = movieRepository.findFirstByTitleLike("metrix2"); //method명을 기반으로 자동 구현된 default SpringDataNeo4j Method
+
+//        metrix2.getActors().forEach(v->v.getPerson().getDirectors().forEach(a->System.out.println("result = " + a.getMovie().getTitle())));
+        //추가 쿼리가 발생하지 않음. 처음 fetch해올때 모든 related types를 가져온다.
+        System.out.println("==========depthTest end===========");
+
+        assertThat(metrix2.getActors().getClass()).isEqualTo(LinkedHashSet.class);
+        //프록시가 아니라 실제 객체기 때문에 테스트 통과
+    }
+
+    @Test
     public void persistenceContextTest(){
         System.out.println("=======persistenceContextTest===========");
         Location suwon = locationRepository.findById("suwon").get();//method명을 기반으로 자동 구현된 default SpringDataNeo4j Method

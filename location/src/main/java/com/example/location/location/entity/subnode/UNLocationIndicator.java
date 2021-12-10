@@ -1,5 +1,4 @@
-package com.example.location.entity;
-
+package com.example.location.location.entity.subnode;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,13 +8,11 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Node
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EAIInformation {
+@Getter
+@Setter
+public class UNLocationIndicator {
     @Id
-    private String EAIInterfaceId;
-    private String EAIEventDate;
-    private String EDWUpdateDate;
+    private String value;
 }
