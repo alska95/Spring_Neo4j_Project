@@ -48,9 +48,14 @@ public class LocationService {
         return entityToResponse(locationRepository.findById(locationId).orElse(null));
     }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private ResponseLocationDto entityToResponse(Location location) {
-        return modelMapper.map(location, ResponseLocationDto.class);
+
+        ResponseLocationDto result = modelMapper.map(location, ResponseLocationDto.class);
+
+        result.setUN_LOC_IND_CD(location.getUN_LOC_IND_CD().get(0).getValue());
+        return result;
     }
 
     //locationDto를 Entity로 변환합니다.
@@ -58,8 +63,6 @@ public class LocationService {
 
         Location location = modelMapper.map(locationDto, Location.class);
         insertRelationship(location, locationDto);
-
-        log.info("location un size = [{}]", location.getUN_LOC_IND_CD().size());
 
 
         return location;

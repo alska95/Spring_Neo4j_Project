@@ -1,6 +1,6 @@
 package com.example.location.location.entity;
 
-import com.example.location.entity.Continent;
+import com.example.location.country.Country;
 import com.example.location.location.entity.subnode.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -76,4 +76,9 @@ public class Location {
 
     @Relationship(type = "HAS_GMT_HOURS_OF" , direction = OUTGOING)
     private List<LocationCharacter> GMT_HRS= new ArrayList<>();
+
+    ///////////////////////// 다른 테이블 relation //////////////////////
+
+    @Relationship(type = "LOCATED_COUNTRY", direction = INCOMING)
+    private List<Country> CNT_CD;
 }

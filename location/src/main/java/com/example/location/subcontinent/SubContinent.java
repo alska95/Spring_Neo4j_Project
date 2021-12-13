@@ -1,4 +1,4 @@
-package com.example.location.entity;
+package com.example.location.subcontinent;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

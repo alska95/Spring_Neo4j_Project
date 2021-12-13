@@ -77,6 +77,8 @@ public class LocationDto {
     private String LOC_CHR_CD;
     @JsonProperty(value = "HUB_LOC_CD")
     private String HUB_LOC_CD;
+    @JsonProperty(value = "CNT_CD")
+    private String CNT_CD;
 
 
 

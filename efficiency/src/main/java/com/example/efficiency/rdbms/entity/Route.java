@@ -13,6 +13,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 public class Route {
+
     @Id @GeneratedValue
     private Long id;
 
